@@ -13,7 +13,7 @@
 #include "../threads/thread.h"
 #include "../threads/synch.h"
 
-#define TIMER_PERIODIC_INTERVAL 500000 // Time in miliseconds
+#define TIMER_PERIODIC_INTERVAL 50 // Time in miliseconds
 
 struct bcm2835_system_timer_registers {
   volatile unsigned int CS;  /** System Timer Control/Status */
@@ -109,7 +109,7 @@ static void timer_irq_handler(struct interrupts_stack_frame *stack_frame) {
   thread_tick(stack_frame);
 
   //timer_msleep(1000000);
-  timer_msleep(300000);
+  //timer_msleep(300000);
 
   // The System Timer compare register has to be set up with the new time after the timer interrupt.
   timer_set_interval(IRQ_1, TIMER_PERIODIC_INTERVAL);

@@ -94,11 +94,31 @@ The memory that is allocated via palloc or malloc starts in the address:
 ********************************************************************************************/
 hang: b hang
 
+.globl PUT32
+PUT32:
+    str r1,[r0]
+    bx lr
+
+.globl GET32
+GET32:
+    ldr r0,[r0]
+    bx lr
+
+.globl dummy
+dummy:
+    bx lr
+
+.globl enable_irq
+enable_irq:
+    mrs r0,cpsr
+    bic r0,r0,#0x80
+    msr cpsr_c,r0
+    bx lr
 
 /********************************************************************************************
 * main() function
 *
-* main is what we shall call our main operating system method. It never 
+* main is what we shall call our main operating system method. It never
 * returns, and takes no parameters.
 * C++ Signature: void main(void)
 *********************************************************************************************/
@@ -106,5 +126,6 @@ main:
 
 	/* Initializes the kernel (enable IRQ, sets the periodic timer). */
 	bl init
+
 
 

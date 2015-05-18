@@ -571,7 +571,8 @@ static void idle (void *idle_started_ UNUSED) {
 
   for(;;) {
       SetForeColour(green);
-      printf("\nIdle thread....");
+//      printf("\nIdle thread....");
+      interrupts_enable();
       timer_msleep(1000000);
 
       /* Let someone else run. */

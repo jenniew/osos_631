@@ -86,6 +86,7 @@ void init() {
   /* Initializes the Interrupt System. */
   interrupts_init();
   timer_init();
+  keyboard_init();
 
   timer_msleep(5000000);
 
@@ -94,15 +95,16 @@ void init() {
 
   printf("\nFinish booting.");
 
-  tid_b = thread_create("B", PRI_MAX, &B, NULL);
+//  tid_b = thread_create("B", PRI_MAX, &B, NULL);
+//
+//
+//  int tid_c = thread_create("C", PRI_MAX, &c, NULL);
+//
+//  thread_wait(tid_b);
 
-
-  int tid_c = thread_create("C", PRI_MAX, &c, NULL);
-
-  thread_wait(tid_b);
-
-//  thread_create("shell", PRI_MAX, &shell, NULL);
-//    thread_wait(tid);
+  int tid = thread_create("shell", PRI_MAX, &shell, NULL);
+  printf("\nhello shell");
+  thread_wait(tid);
 
   /* Initialize the task_sem to coordinate the main thread with workers */
 /*
@@ -172,25 +174,18 @@ static void c(void *aux){
   for(j;j<20;j++){
     printf("\nCCCCC");
   }
-  printf("\n=================================\n");
+  printf("\n=================================");
 
 }
 
 static void shell(void *aux){
-  uart_puts("Welcome to raspberry pi\n");
-  uart_puts("$");
+  printf("\nWelcome to raspberry pi");
+  printf("$");
   unsigned char buf[128];
-  unsigned char ch;
+  unsigned char* b;
   int i = 0;
   while(1){
-    ch = uart_getc();
-    uart_putc(ch);
-    if(ch!='\n'){
-      buf[i++] = ch;
-    }else{
-      process_cmd(&buf, i);
-      i = 0;
-    }
+    b = uart_gets();
   }
 }
 

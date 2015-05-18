@@ -11,29 +11,7 @@
     </ADDITIONAL_GENERATION_ENVIRONMENT>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4d303c8a-8f29-47d9-b69e-840f534d95de" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/build/init.o" afterPath="$PROJECT_DIR$/src/build/init.o" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/build/interrupt.o" afterPath="$PROJECT_DIR$/src/build/interrupt.o" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/kernel.img" afterPath="$PROJECT_DIR$/src/kernel.img" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/build/list.o" afterPath="$PROJECT_DIR$/src/build/list.o" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/build/output.elf" afterPath="$PROJECT_DIR$/src/build/output.elf" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/build/synch.o" afterPath="$PROJECT_DIR$/src/build/synch.o" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/build/thread.o" afterPath="$PROJECT_DIR$/src/build/thread.o" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/build/timer.o" afterPath="$PROJECT_DIR$/src/build/timer.o" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.cproject" afterPath="$PROJECT_DIR$/.cproject" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/threads/init.c" afterPath="$PROJECT_DIR$/src/threads/init.c" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/threads/interrupt.c" afterPath="$PROJECT_DIR$/src/threads/interrupt.c" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/kernel.list" afterPath="$PROJECT_DIR$/src/kernel.list" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/kernel.map" afterPath="$PROJECT_DIR$/src/kernel.map" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.settings/language.settings.xml" afterPath="$PROJECT_DIR$/.settings/language.settings.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/threads/synch.c" afterPath="$PROJECT_DIR$/src/threads/synch.c" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/threads/thread.c" afterPath="$PROJECT_DIR$/src/threads/thread.c" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/threads/thread.h" afterPath="$PROJECT_DIR$/src/threads/thread.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/devices/timer.c" afterPath="$PROJECT_DIR$/src/devices/timer.c" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/devices/timer.h" afterPath="$PROJECT_DIR$/src/devices/timer.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/vcs.xml" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-    </list>
+    <list default="true" id="4d303c8a-8f29-47d9-b69e-840f534d95de" name="Default" comment="" />
     <ignored path="pintos.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -57,7 +35,7 @@
         <entry file="file://$PROJECT_DIR$/src/threads/init.c">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="118" column="1" selection-start-line="118" selection-start-column="1" selection-end-line="118" selection-end-column="1" />
+              <caret line="134" column="1" selection-start-line="134" selection-start-column="1" selection-end-line="134" selection-end-column="1" />
               <folding />
             </state>
           </provider>
@@ -67,7 +45,7 @@
         <entry file="file://$PROJECT_DIR$/src/threads/synch.c">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="339" column="0" selection-start-line="339" selection-start-column="0" selection-end-line="339" selection-end-column="0" />
+              <caret line="337" column="0" selection-start-line="337" selection-start-column="0" selection-end-line="337" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -106,8 +84,8 @@
       <file leaf-file-name="thread.c" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/threads/thread.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-3.7339056">
-              <caret line="441" column="3" selection-start-line="441" selection-start-column="3" selection-end-line="441" selection-end-column="3" />
+            <state vertical-scroll-proportion="-3.8197424">
+              <caret line="437" column="3" selection-start-line="437" selection-start-column="3" selection-end-line="437" selection-end-column="3" />
               <folding />
             </state>
           </provider>
@@ -805,7 +783,7 @@
     <entry file="file://$PROJECT_DIR$/src/threads/synch.c">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="339" column="0" selection-start-line="339" selection-start-column="0" selection-end-line="339" selection-end-column="0" />
+          <caret line="337" column="0" selection-start-line="337" selection-start-column="0" selection-end-line="337" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -813,15 +791,15 @@
     <entry file="file://$PROJECT_DIR$/src/threads/init.c">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="118" column="1" selection-start-line="118" selection-start-column="1" selection-end-line="118" selection-end-column="1" />
+          <caret line="134" column="1" selection-start-line="134" selection-start-column="1" selection-end-line="134" selection-end-column="1" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/threads/thread.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-3.7339056">
-          <caret line="441" column="3" selection-start-line="441" selection-start-column="3" selection-end-line="441" selection-end-column="3" />
+        <state vertical-scroll-proportion="-3.8197424">
+          <caret line="437" column="3" selection-start-line="437" selection-start-column="3" selection-end-line="437" selection-end-column="3" />
           <folding />
         </state>
       </provider>
