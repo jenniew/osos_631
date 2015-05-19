@@ -265,7 +265,6 @@ list_pop_front (struct list *list)
   list_remove (front);
   return front;
 }
-
 /* Removes the back element from LIST and returns it.
    Undefined behavior if LIST is empty before removal. */
 struct list_elem *

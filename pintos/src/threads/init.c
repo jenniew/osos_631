@@ -19,30 +19,37 @@
 #include "thread.h"
 #include "vaddr.h"
 
+#include "../lib/string.h"
+
 /* -ul: Maximum number of pages to put into palloc's user pool. */
 static size_t user_page_limit = SIZE_MAX;
 
 /* Tasks for the Threads. */
 static struct semaphore task_sem;
 
-//static void hello_test(void *);
-/*
+
+static void hello_test(void *);
+static void A();
+static void B();
+static void C();
+static void command_line();
+static void command_help();
+static void command_ts();
+
 struct wait_node {
-  struct lock mutex;
-  struct condition cv;
-  bool done;
+    struct lock mutex;
+    struct condition cv;
+    bool done;
 };
-
-
 static struct wait_node sync_node;
 
 static void t_wait(struct wait_node *wn);
 static void t_exit(struct wait_node *wn);
-*/
+
+static void cv_test(void *);
 //static void cv_test(void *);
-static void B(void *);
-static void c(void *);
 static void shell(void *);
+
 
 
 /*
@@ -68,115 +75,171 @@ static int tid_b;
 */
 void init() {
 
-  /* Initializes ourselves as a thread so we can use locks,
-    then enable console locking. */
-  thread_init();
 
-  /* Initializes the frame buffer and console. */
-  framebuffer_init();
-  serial_init();
-  video_init();
+    /* Initializes ourselves as a thread so we can use locks,
+      then enable console locking. */
+    thread_init();
 
-  printf("\nOsOs Kernel Initializing");
+    /* Initializes the frame buffer and console. */
+    framebuffer_init();
+    serial_init();
+    video_init();
 
-  /* Initialize memory system. */
-  palloc_init (user_page_limit);
-  malloc_init ();
+    printf("\nOsOs Kernel Initializing");
 
-  /* Initializes the Interrupt System. */
-  interrupts_init();
-  timer_init();
-  keyboard_init();
+    /* Initialize memory system. */
+    palloc_init (user_page_limit);
+    malloc_init ();
 
-  timer_msleep(5000000);
+    /* Initializes the Interrupt System. */
+    interrupts_init();
+    timer_init();
+    keyboard_init();
 
-  /* Starts preemptive thread scheduling by enabling interrupts. */
-  thread_start();
+    timer_msleep(5000000);
 
-  printf("\nFinish booting.");
+    /* Starts preemptive thread scheduling by enabling interrupts. */
+    thread_start();
 
-//  tid_b = thread_create("B", PRI_MAX, &B, NULL);
-//
-//
-//  int tid_c = thread_create("C", PRI_MAX, &c, NULL);
-//
-//  thread_wait(tid_b);
+    printf("\nFinish booting.");
 
-  int tid = thread_create("shell", PRI_MAX, &shell, NULL);
-  printf("\nhello shell");
-  thread_wait(tid);
+    /* Initialize the task_sem to coordinate the main thread with workers */
 
-  /* Initialize the task_sem to coordinate the main thread with workers */
-/*
-  sema_init(&task_sem, 0);
+    sema_init(&task_sem, 0);
 
-  thread_create("Hello Test", PRI_MAX, &hello_test, NULL);
-  sema_down(&task_sem);
+//    thread_create("Hello Test", PRI_MAX, &hello_test, NULL);
+//    sema_down(&task_sem);
+//    thread_create("A", 35, &A, NULL);
+//    thread_create("B", 36, &B, NULL);
+//    thread_create("C", 37, &C, NULL);
+    thread_create("shell", PRI_MAX, &command_line, NULL);
+//    thread_create("print thread",37,&command_ts,NULL);
+    lock_init(&sync_node.mutex);
+    cond_init(&sync_node.cv);
+    sync_node.done = false;
 
-  lock_init(&sync_node.mutex);
-  cond_init(&sync_node.cv);
-  sync_node.done = false;
+//    thread_create("CV Test", PRI_MAX, &cv_test, NULL);
+//    t_wait(&sync_node);
 
-  thread_create("CV Test", PRI_MAX, &cv_test, NULL);
-  t_wait(&sync_node);
- */
-  printf("\nContinue main thread.");
-  printf("\nAll done.");
 
-  thread_exit ();
+    printf("\nAll done.");
+    thread_exit ();
 }
-
 
 static void hello_test(void *aux) {
-  printf("\n");
-  printf("Hello from OsOS\n");
-  printf("\n");
-  sema_up(&task_sem);
+    printf("\n");
+    printf("Hello from OsOS\n");
+    printf("\n");
 }
-/*
+
 static void t_wait(struct wait_node *wn)
 {
-  lock_acquire(&wn->mutex);
-  while (!wn->done) {
-    cond_wait(&wn->cv, &wn->mutex);
-  }
-  lock_release(&wn->mutex);
+    lock_acquire(&wn->mutex);
+    while (!wn->done) {
+        cond_wait(&wn->cv, &wn->mutex);
+    }
+    lock_release(&wn->mutex);
 }
 
 static void t_exit(struct wait_node *wn)
 {
-  lock_acquire(&wn->mutex);
-  wn->done = true;
-  cond_signal(&wn->cv,&wn->mutex);
-  lock_release(&wn->mutex);
+    lock_acquire(&wn->mutex);
+    wn->done = true;
+    cond_signal(&wn->cv,&wn->mutex);
+    lock_release(&wn->mutex);
 }
 
 static void cv_test(void *aux) {
-  printf("\n");
-  printf("Hello from CV Test\n");
-  printf("\n");
-  t_exit(&sync_node);
-}
-*/
-
-static void B(void *aux){
-  int j = 0;
-  for(j;j<100;j++){
-    printf("\nBBBBB");
-  }
-  printf("\n=================================\n");
-
+    printf("\n");
+    printf("Hello from CV Test\n");
+    printf("\n");
+    t_exit(&sync_node);
 }
 
-static void c(void *aux){
-  thread_wait(tid_b);
-  int j = 0;
-  for(j;j<20;j++){
-    printf("\nCCCCC");
-  }
-  printf("\n=================================");
+static void A(){
+    int i = 0;
+    for (i = 0; i < 50; ++i) {
+        printf("\nAAAAAAAAAAAAAAAAAAAAAAAAAA\n");
+    }
+}
+
+static void B(){
+    int i = 0;
+    for (i = 0; i < 50; ++i) {
+        printf("\nBBBBBBBBBBBBBBBBBBBBBBBBBB\n");
+    }
+}
+
+static void C(){
+//    int i = 0;
+//    for (i = 0; i < 50; ++i) {
+//        printf("CCCCCCCCCCCCCCCCCCCCCCCCCC\n");
+//
+//    }
+    while (1){
+
+    }
 
 }
+
+void command_line(){
+    int i=0,j=0,k=0,l=0,m=0;
+    char buf[100],buf1[100],buf2[100],func_name[100];
+    memset(buf,0,100);
+    memset(func_name,0,100);
+    char *ts = "ts";
+    char *help = "help";
+    char *run = "run ";
+    char *bg = "bg ";
+    char temp;
+    printf("\n\n$");
+    while (1){
+        temp =  uart_getc();
+        uart_putc(temp);
+        if (temp!='\r'){
+            buf[i++] = temp;
+        } else{
+            j = strcmp(buf,ts);
+            k = strcmp(buf,help);
+            strlcpy(buf1,buf,5);
+            l = strcmp(buf1,run);
+            strlcpy(buf2,buf,4);
+            m = strcmp(buf2,bg);
+            if (j==0){        //if it is a ts call
+                command_ts();
+            } else if (k==0){ //if it is a help call
+                command_help();
+            } else if (m==0){//if it is a bg call
+                const char* func = buf+3;
+                strlcpy(func_name,func,strlen(func)+1);
+                command_bg(func_name);
+            } else if (l==0){ //if it is a run call
+                const char* func = buf+4;
+                strlcpy(func_name,func,strlen(func)+1);
+                command_run(func_name);
+            } else{
+                printf("wrong command\n$");
+            }
+            i=0;
+            memset(buf,0,100);
+        }
+    }
+}
+
+void command_help(){
+    printf("ts --- Show threads information that tid,thread name,status\n");
+    printf("run <func>---launch a thread function and wait for completion\n");
+    printf("bg  <func>---launch a command in the background\n");
+    printf("$");
+}
+
+void command_ts(){
+    int count = getNumberOfThreads();
+    printf("There are %d threads\n",count);
+    thread_information_print();
+    printf("$");
+}
+
 
 static void shell(void *aux){
   printf("\nWelcome to raspberry pi");
@@ -189,16 +252,37 @@ static void shell(void *aux){
   }
 }
 
-void process_cmd(unsigned char * buf, int size){
-    unsigned char name[128];
-    unsigned char *arg1;
-    unsigned char *arg2;
-    unsigned char *p = buf;
-    unsigned char *q = name;
-    while(*p != ' '|| *p != '\n'){
-      q = *p;
-      q++;
+void command_bg(const char *str){
+    if (strcmp(str,"A")==0){
+        thread_create(str,PRI_DEFAULT,&A,NULL);
+    } else if (strcmp(str,"B")==0){
+        thread_create(str,PRI_DEFAULT,&B,NULL);
+    } else if (strcmp(str,"C")==0){
+        thread_create(str,PRI_DEFAULT,&C,NULL);
+    } else if (strcmp(str,"hello_test")==0){
+        thread_create(str, PRI_MAX, &hello_test, NULL);
     }
-    q='\0';
-    uart_puts(name);
+    printf("$");
+
 }
+
+void command_run(const char *str){
+    if (strcmp(str,"A")==0){
+        tid_t tid = thread_create(str,PRI_DEFAULT,&A,NULL);
+        thread_wait(tid);
+    } else if (strcmp(str,"B")==0){
+        tid_t tid = thread_create(str,PRI_DEFAULT,&B,NULL);
+        thread_wait(tid);
+    } else if (strcmp(str,"C")==0){
+        tid_t tid = thread_create(str,PRI_DEFAULT,&C,NULL);
+        thread_wait(tid);
+    } else if (strcmp(str,"hello_test")==0){
+        tid_t tid = thread_create(str, PRI_MAX, &hello_test, NULL);
+        thread_wait(tid);
+    }
+    printf("$");
+}
+
+
+
+

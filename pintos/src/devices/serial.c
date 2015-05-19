@@ -297,10 +297,10 @@ unsigned char uart_getc()
           if(rxtail != rxhead){
             while(rxtail!=rxhead)
             {
-                uart_putc(rxbuffer[rxtail]);
+                //uart_putc(rxbuffer[rxtail]);
                 rxtail=(rxtail+1)&RXBUFMASK;
             }
-            return rxbuffer[rxtail];
+            return rxbuffer[rxtail-1];
           }else{
             //if tail == head, no data
             sema_down(&io_sem);

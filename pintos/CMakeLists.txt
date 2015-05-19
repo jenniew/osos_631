@@ -13,6 +13,38 @@ set(SOURCE_FILES
     src/arm_asm/mailbox.s
     src/arm_asm/memoryCopy.s
     src/arm_asm/start.s
+<<<<<<< HEAD
+    src/build/bitmap.o
+    src/build/console.o
+    src/build/contextSwitch.o
+    src/build/debug.o
+    src/build/drawing.o
+    src/build/framebuffer.o
+    src/build/frameBufferInfo.o
+    src/build/gpio.o
+    src/build/gpioFunction.o
+    src/build/hash.o
+    src/build/init.o
+    src/build/interrupt.o
+    src/build/interruptsHandlers.o
+    src/build/list.o
+    src/build/mailbox.o
+    src/build/malloc.o
+    src/build/memoryCopy.o
+    src/build/output.elf
+    src/build/palloc.o
+    src/build/random.o
+    src/build/serial.o
+    src/build/start.o
+    src/build/stdio.o
+    src/build/stdlib.o
+    src/build/string.o
+    src/build/synch.o
+    src/build/thread.o
+    src/build/timer.o
+    src/build/video.o
+=======
+>>>>>>> jenniew/master
     src/devices/bcm2835.h
     src/devices/framebuffer.c
     src/devices/framebuffer.h
@@ -70,7 +102,14 @@ set(SOURCE_FILES
     src/threads/vaddr.h
     src/versions/README_V1_01
     src/config.txt
+<<<<<<< HEAD
+    src/kernel.img
     src/kernel.ld
+    src/kernel.list
+    src/kernel.map
+=======
+    src/kernel.ld
+>>>>>>> jenniew/master
     src/Makefile
     src/README)
 

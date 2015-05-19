@@ -40,6 +40,8 @@ extern void save_and_switch_context(struct interrupts_stack_frame *cur_stack_fra
    of thread.h for details. */
 #define THREAD_MAGIC 0xcd6abf4b
 
+#define TIMER_PERIODIC_INTERVAL 500000 // Time in miliseconds
+
 /* List of processes in THREAD_READY state, that is, processes
    that are ready to run but not actually running. */
 static struct list ready_list;
@@ -57,6 +59,9 @@ static struct thread *initial_thread;
 /* Lock used by allocate_tid(). */
 static struct lock tid_lock;
 
+/*enable flag*/
+static int enable = 0;
+
 /* Statistics. */
 static uint64_t idle_ticks;    /* # of timer ticks spent idle. */
 static uint64_t kernel_ticks;  /* # of timer ticks in kernel threads. */
@@ -68,7 +73,6 @@ static uint32_t thread_ticks;   /* # of timer ticks since last yield. */
 
 /* Stack address to be allocated for the different threads. */
 //static uint32_t thread_memory_loc = MEMORY_THREAD_BASE;
-
 //static struct semaphore wait_sem;
 
 struct wait_node{
@@ -79,7 +83,6 @@ struct wait_node{
 };
 
 static struct list wait_list;
-
 static void kernel_thread (thread_func *, void *aux);
 
 /* Current stack frame. */
@@ -90,6 +93,8 @@ static struct interrupts_stack_frame *get_current_interrupts_stack_frame();
 static void idle (void *idle_started_ UNUSED);
 static struct thread* thread_get_running_thread(void);
 static struct thread* thread_get_next_thread_to_run(void);
+
+struct thread *list_pri_high(struct list * list);
 static void thread_save_stack_frame(struct thread* thread, struct interrupts_stack_frame* stack_frame);
 static void schedule(); /* Schedule the next thread to run. */
 static void schedule_in_interrupt(struct thread *cur, struct thread *next);
@@ -128,12 +133,12 @@ void thread_init(void) {
   //for thread wait
   list_init(&wait_list);
   printf("\nInitialize waiting list");
-
   /* Set up a thread structure for the running thread. */
   initial_thread = get_first_thread();
   init_thread (initial_thread, "main", PRI_DEFAULT);
   initial_thread->status = THREAD_RUNNING;
   initial_thread->tid = allocate_tid();
+  initial_thread->tick = 0;
 }
 
 /* Does basic initialization of T as a blocked thread named NAME.
@@ -206,8 +211,10 @@ void thread_tick (struct interrupts_stack_frame *stack_frame) {
   /* Update statistics. */
   if (t == idle_thread) {
       idle_ticks++;
+
   } else {
       kernel_ticks++;
+      t->tick++;
   }
 
   /* Enforce preemption. */
@@ -215,16 +222,6 @@ void thread_tick (struct interrupts_stack_frame *stack_frame) {
   if (thread_ticks >= TIME_SLICE) {
     interrupts_yield_on_return();
   }
-//  struct list* wait_list = &timer_wait_list;
-//      struct timer_wait_node * twn;
-//      struct list_elem* e = list_front(wait_list);
-//  //    twn = list_entry(list_front(wait_list),struct timer_wait_node,elem);
-//      while (e != list_tail(wait_list)){
-//          twn = list_entry(e,struct timer_wait_node,elem);
-//          if(twn->t->finish >=timer_get_timestamp())
-//              sema_up(&twn->sem);
-//          e=e->next;
-//      }
 }
 
 /* Prints thread statistics. */
@@ -250,7 +247,6 @@ tid_t thread_create(const char *name, int32_t priority,
   ASSERT (PRI_MIN <= priority && priority <= PRI_MAX);
   ASSERT (name != NULL);
   ASSERT (function != NULL);
-  printf("\nCreate new thread: %s", name);
   enum interrupts_level old_level;
   tid_t tid;
 
@@ -272,7 +268,8 @@ tid_t thread_create(const char *name, int32_t priority,
   thread->priority = priority;
   thread->magic = THREAD_MAGIC;
   thread->function = (thread_func *) function;
-
+//    thread->thread_start_time = timer_get_timestamp();
+  thread->tick = 0;
   /* Setting the Stack Pointer. Note that we are subtracting -4, so when pg_round_down() is called
      to get the current thread, it returns the right page boundary. */
   thread->stack_frame.r13_sp = (uint32_t *) ((uint8_t *) thread + PGSIZE - 4);
@@ -289,9 +286,7 @@ tid_t thread_create(const char *name, int32_t priority,
   // Setting the return address (Link Register - LR)
   thread->stack_frame.r14_lr = (void *) 0;
   list_push_back(&all_list, &thread->allelem);
-
 //  sema_init(&wait_sem,0);
-
   interrupts_set_level(old_level);
 
   /* Add to run queue. */
@@ -330,7 +325,6 @@ void thread_unblock (struct thread *t) {
   old_level = interrupts_disable ();
   ASSERT (t->status == THREAD_BLOCKED);
   list_push_back (&ready_list, &t->elem);
-//  printf("\nFinish unblock thread: %s", t->name);
   t->status = THREAD_READY;
   interrupts_set_level (old_level);
 }
@@ -435,7 +429,7 @@ static void schedule() {
     schedule_in_interrupt(cur, next);
   } else {
     //printf("\nScheduling a thread not in interrupt.");
-    schedule_not_in_interrupt(cur,next);
+    schedule_not_in_interrupt(cur, next);
   }
 }
 
@@ -497,8 +491,7 @@ void thread_schedule_tail(struct thread *prev, struct thread *next) {
      palloc().) */
   if (prev->status == THREAD_DYING && prev != initial_thread) {
        ASSERT (prev != next)
-       printf("\nReleasing resources of : %s, TID: %d", prev->name, prev->tid);
-
+       printf("\nReleasing resources of : %s, TID: %d\n", prev->name, prev->tid);
        /* Releasing the memory that was assigned to this thread. */
        palloc_free_page(prev);
        timer_msleep(1000000);
@@ -622,8 +615,62 @@ static struct thread* thread_get_next_thread_to_run(void) {
   if (list_empty(&ready_list)) {
       return idle_thread;
   } else {
+      if (enable==1){
+          return list_pri_high (&ready_list);
+      }
       return list_entry (list_pop_front (&ready_list), struct thread, elem);
   }
+}
+
+//Get the highest priority thread
+struct thread *
+list_pri_high(struct list * list){
+    struct list_elem * temp = list_front(list);
+    struct thread * t;
+    struct thread * threadHigh;
+    threadHigh = list_entry(list_front(list),struct thread, elem);
+    while(temp!= list_tail(list)){
+        t = list_entry(temp,struct thread, elem);
+        if(t->priority > threadHigh->priority){
+            threadHigh = t;
+        }
+        temp = temp->next;
+    }
+    list_remove (&threadHigh->elem);
+    return threadHigh;
+}
+
+//Get the number of threads
+ int getNumberOfThreads(){
+    int count = list_size(&all_list);
+    return count;
+}
+
+//Print thread information
+void thread_information_print(){
+    struct list_elem * temp = list_front(&all_list);
+    struct thread * t;
+    printf("Tid\t Status\t\t\t Name\t\t Running Time\n");
+    while (temp!=list_tail(&all_list)){
+        t = list_entry (temp, struct thread, allelem);
+        switch (t->status){
+            case THREAD_RUNNING:
+                printf("%d\t THREAD_RUNNING\t %s \t\t %3d\n",t->tid,t->name,t->tick);
+                break;
+            case THREAD_READY:
+                printf("%d\t THREAD_READY\t %d \t\t %s\n",t->tid,t->tick,t->name);
+                break;
+            case THREAD_BLOCKED:
+                printf("%d\t THREAD_BLOCKED\t %3d \t%s \n",t->tid,t->tick,t->name);
+                break;
+            case THREAD_DYING:
+                printf("%d\t THREAD_DYING\t %d \t\t %s\n",t->tid,t->tick,t->name);
+                break;
+            default:
+                printf("==========wrong status==========\n");
+        }
+        temp = temp->next;
+    }
 }
 
 static void thread_save_stack_frame(struct thread* thread, struct interrupts_stack_frame* stack_frame) {
@@ -709,7 +756,7 @@ void thread_wait(tid_t tid) {
                       lock_acquire(&node->mutex);
                       printf("\n thread %s wait for thread %s",thread_current()->name,t->name);
                       cond_wait(&node->cv,&node->mutex);
-                      printf("\n Finish thread %s wait",thread_current()->name);
+                      printf("\n Finish thread %s wait\n",thread_current()->name);
                       lock_release(&node->mutex);
                       return;
                   }else{
@@ -728,7 +775,7 @@ void thread_wait(tid_t tid) {
               list_push_back(&wait_list, &new_node.elem);
               printf("\nThread %s wait for thread %s",thread_current()->name,t->name);
               cond_wait(&new_node.cv,&new_node.mutex);
-              printf("\nFinish thread %s wait",thread_current()->name);
+              printf("\nFinish thread %s wait\n",thread_current()->name);
               lock_release(&new_node.mutex);
               return;
           }

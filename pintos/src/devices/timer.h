@@ -8,7 +8,6 @@
 #ifndef DEVICES_TIMER_H_
 #define DEVICES_TIMER_H_
 
-
 #include "../threads/synch.h"
 
 struct timer_wait_node{
